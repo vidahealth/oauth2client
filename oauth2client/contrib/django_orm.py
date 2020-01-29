@@ -52,7 +52,10 @@ class CredentialsField(models.Field):
             return None
         if isinstance(value, oauth2client.client.Credentials):
             return value
-        return pickle.loads(base64.b64decode(smart_bytes(value)))
+        if six.PY2:
+            return pickle.loads(base64.b64decode(smart_bytes(value)))
+        else:
+            return pickle.loads(base64.b64decode(smart_bytes(value)), encoding='latin1')
 
     def get_prep_value(self, value):
         if value is None:
@@ -92,7 +95,10 @@ class FlowField(models.Field):
             return None
         if isinstance(value, oauth2client.client.Flow):
             return value
-        return pickle.loads(base64.b64decode(value))
+        if six.PY2:
+            return pickle.loads(base64.b64decode(value))
+        else:
+            return pickle.loads(base64.b64decode(value), encoding='latin1')
 
     def get_prep_value(self, value):
         if value is None:
